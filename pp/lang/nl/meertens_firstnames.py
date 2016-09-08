@@ -60,11 +60,11 @@ class MeertensFirstnameHarvester:
                 self.CACHE_M)
             )
 
-            with open(self.CACHE_F, 'wb') as fh:
-                pickle.dump(self.male, fh)
-
             with open(self.CACHE_M, 'wb') as fh:
                 pickle.dump(self.female, fh)
+                
+            with open(self.CACHE_F, 'wb') as fh:
+                pickle.dump(self.male, fh)
 
             for i in range(26665):
                 url = self.BASEURL1 % (i, k)

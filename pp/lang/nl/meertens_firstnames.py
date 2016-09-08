@@ -25,7 +25,6 @@ from StringIO import StringIO
 sys.reload(sys)
 sys.setdefaultencoding('utf-8')
 
-
 class MeertensFirstnameHarvester:
     BASEURL = 'http://www.meertens.knaw.nl/nvb/naam/bevat/%s'
     BASEURL1 = 'http://www.meertens.knaw.nl/nvb/naam/pagina%i/bevat/%s'

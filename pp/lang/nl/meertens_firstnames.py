@@ -14,21 +14,16 @@
     https://github.com/KBNLresearch/Narralyzer/blob/master/licence.txt
 """
 
-import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
-
-import json
 import logging
-import os
 import pickle
-import random
-import string
+import sys
 import urllib
 
 from lxml import etree
-from pprint import pprint
 from StringIO import StringIO
+
+sys.reload(sys)
+sys.setdefaultencoding('utf-8')
 
 
 class MeertensFirstnameHarvester:
@@ -42,13 +37,11 @@ class MeertensFirstnameHarvester:
     male = {}
 
     # http://www.phonetics.ucla.edu/course/chapter1/vowels.html
-    vowels = [
-            'a',
-            'e',
-            'i',
-            'o',
-            'oe',
-    ]
+    vowels = ['a',
+              'e',
+              'i',
+              'o',
+              'u']
 
     def __init__(self):
         for k in self.vowels:
@@ -62,7 +55,7 @@ class MeertensFirstnameHarvester:
 
             with open(self.CACHE_M, 'wb') as fh:
                 pickle.dump(self.female, fh)
-                
+
             with open(self.CACHE_F, 'wb') as fh:
                 pickle.dump(self.male, fh)
 
@@ -108,7 +101,7 @@ class MeertensFirstnameHarvester:
             female = tds[nr + 2].text.split(' ')[-1]
             male = tds[nr + 1].text.split(' ')[-1]
 
-            if not name in [self.female.keys() + self.male.keys()]:
+            if name not in [self.female.keys() + self.male.keys()]:
                 if female == '-':
                     female = 0
                 if male == '-':

@@ -35,8 +35,8 @@ class MeertensFirstnameHarvester:
     BASEURL = 'http://www.meertens.knaw.nl/nvb/naam/bevat/%s'
     BASEURL1 = 'http://www.meertens.knaw.nl/nvb/naam/pagina%i/bevat/%s'
 
-    CACHE_F = 'first_names_m.pickle'
-    CACHE_M = 'first_names_f.pickle'
+    CACHE_F = 'first_names_f.pickle'
+    CACHE_M = 'first_names_m.pickle'
 
     female = {}
     male = {}

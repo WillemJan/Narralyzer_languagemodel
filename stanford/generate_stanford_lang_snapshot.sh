@@ -68,3 +68,11 @@ function fetch_stanford_lang_models {
     done
     find . -name \*.jar -exec unzip -q -o '{}' ';'
 }
+
+
+for lang in $($CONFIG supported_languages | xargs)
+do
+    mdkir -p
+
+done
+

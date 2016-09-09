@@ -9,56 +9,20 @@
 # all (global) variables should be defined in the conf/conf.ini file.
 CONFIG=$(../../narralyzer/config.py self)
 
-# Fetch the given URL, and save to disk
-# use the 'basename' for storing,
-# retry a couple of times before failing.
-function get_if_not_there () {
-    URL=$1
-    retries=4
-    not_done="true"
-    if [ ! -f $(basename $URL) ]; then
-        while [ $not_done == "true" ]; do
-           inform_user "Fetching $URL..."
-           wget_output=$(wget -q "$URL")
-           if [ $? -ne 0 ]; then
-               # If downloading fails, try again.
-               retries=$(($retries - 1))
-               if [ $retries == 0 ]; then
-                   $(wget -q "$URL")
-                   airbag "Error while fetching $URL, no retries left." $LINENO
-               else
-                   inform_user "Error while fetching $URL, $retries left." $LINENO
-                   sleep 1
-               fi
-           else
-               # Else leave the loop.
-               not_done="false"
-           fi
-        done
-    else
-        inform_user "Not fetching $URL, file allready there."
-    fi
+#------------------------------------------------
+# Functions
+#------------------------------------------------
+
+# Little wrapper to datestamp outgoing messages.
+function inform_user() {
+    msg="$1"
+    timestamp=$(date "+%Y-%m-%d %H:%M")
+    echo "$timestamp: Narralyzer start_stanford.sh $msg"
 }
 
-# Moves the retrieved classifiers into there respective lang dir, 
-# and generate md5sum usefull for reference later.
-function move_classifiers_inplace {
-    for lang in $($CONFIG supported_languages | xargs); do
-        target_path=$($CONFIG root)
-        target_path="$target_path"/"$($CONFIG stanford_ner_path)"/"$lang"
-        echo "target_path: $target_path"
-        if [ ! -d $target_path ]; then
-            mkdir -p $target_path || airbag "Could not create directory: $target_path" $LINENO
-            inform_user "Created directory: $target_path"
-        fi
-        src="$($CONFIG root)"/"$(find stanford/models -name $($CONFIG "lang_"$lang"_stanford_ner") -type f || airbag "Could not find model for $lang." $LINENO)"
-        checksum=$(md5sum -b "$src" | cut -d ' ' -f 1 || airbag "Failed to md5sum $src" $LINENO)
-        target="$target_path"/"$checksum"".crf.ser.gz"
-        inform_user "Moving classifier $src to $target."
-        # SHOWER-THOUGHT: I could also link them, and delete unused files..
-        # For now, this feels right.
-        mv "$src" "$target" || airbag "Failed to move $src to $target" $LINENO
-    done
+function airbag() {
+    echo "Exit with -1, from $0:$@"
+    exit -1
 }
 
 # Fetch and unpack the language models.
@@ -69,10 +33,33 @@ function fetch_stanford_lang_models {
     find . -name \*.jar -exec unzip -q -o '{}' ';'
 }
 
+#------------------------------------------------
+# / Functions
+#------------------------------------------------
 
 for lang in $($CONFIG supported_languages | xargs)
 do
-    echo $($CONFIG stanford)
-    echo "$lang"
-done
+    (
+    dest_path="$($CONFIG root)"/"$($CONFIG stanford_models)"
+    src_url=$($CONFIG lang_"$lang"_stanford_ner_source)
+    if [ -f "$dest_path"/"$(basename $src_url)" ]
+    then
+        msg="Allready stored ""$dest_path"/"$(basename $src_url)"
+        airbag $msg
+    fi
+    msg="Storing $src_url into $dest_path"
+    inform_user "$msg"
 
+    msg="Failed to get""$dest_path"/"$(basename $src_url)"
+    curl -s $src_url > "$dest_path"/"$(basename $src_url)" || airbag "$msg"
+
+    sum=$(md5sum -b "$dest_path"/"$(basename $src_url)" | cut -d ' ' -f 1)
+    if [ -f "$dest_path"/"$sum" ]
+    then
+        msg="md5sum hash space to small to handle all language modules. (Bable-fish alert!)"
+        airbag "$msg"
+    fi
+    mv "$dest_path"/"$(basename $src_url)" "$dest_path"/"$sum"
+    ln -s "$dest_path"/"$sum" "$dest_path"/"$(basename $src_url)"
+    ) &
+done

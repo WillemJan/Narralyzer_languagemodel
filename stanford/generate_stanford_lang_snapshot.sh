@@ -10,7 +10,7 @@
 
 # Narralyzer config util,
 # all (global) variables should be defined in the conf/conf.ini file.
-CONFIG=$(./narralyzer/config.py self)
+CONFIG=$(../../narralyzer/config.py self)
 
 
 # Fetch the given URL, and save to disk

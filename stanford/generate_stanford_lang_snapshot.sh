@@ -40,19 +40,6 @@ function get_if_not_there () {
     fi
 }
 
-# Fetch and unpack the Stanford core package.
-function fetch_stanford_core {
-    STANFORD_CORE=$($CONFIG stanford_core_source)
-    get_if_not_there $STANFORD_CORE
-    if [ -f $(basename $STANFORD_CORE) ]; then
-        unzip -q -n $(basename "$STANFORD_CORE")
-        # Remove the download package aferwards.
-        rm $(basename "$STANFORD_CORE")
-        # TODO: fix next line
-        ln -s $(find -name \*full\* -type d) core
-    fi
-}
-
 # Moves the retrieved classifiers into there respective lang dir, 
 # and generate md5sum usefull for reference later.
 function move_classifiers_inplace {
@@ -72,23 +59,6 @@ function move_classifiers_inplace {
         # For now, this feels right.
         mv "$src" "$target" || airbag "Failed to move $src to $target" $LINENO
     done
-}
-
-# Fetch and unpack the language models.
-function fetch_stanford_lang_models {
-    for lang in $($CONFIG supported_languages | xargs);do
-        get_if_not_there $($CONFIG "lang_"$lang"_stanford_ner_source")
-    done
-    find . -name \*.jar -exec unzip -q -o '{}' ';'
-}
-
-# Check if we find (Python) virtualenv.
-is_virtualenv_avail() {
-    is_avail=$(which virtualenv | wc -l)
-    if [ "$is_avail" = "0" ]; then
-        airbag "Virtualenv is not available, helas. sudo-apt-get install virtualenv?" $LINENO
-    fi
-    inform_user "Virtualenv is available."
 }
 
 # Fetch and unpack the language models.

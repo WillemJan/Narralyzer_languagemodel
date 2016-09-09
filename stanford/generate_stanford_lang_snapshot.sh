@@ -1,17 +1,13 @@
 #!/bin/bash
 
-
-# Goal of this install procedure is to get && and freeze the stanford-core (ner) jar's
-# Also fetch and free the language models. This enables the framework to keep track of
-# data and software versions used during classification.
+# Goal of this install procedure is to get && and freeze the stanford-language models
+# This enables the framework to keep track of data and software versions used during classification.
 
 # This file is part of the Narralyzer project.
-
 
 # Narralyzer config util,
 # all (global) variables should be defined in the conf/conf.ini file.
 CONFIG=$(../../narralyzer/config.py self)
-
 
 # Fetch the given URL, and save to disk
 # use the 'basename' for storing,
@@ -43,7 +39,6 @@ function get_if_not_there () {
         inform_user "Not fetching $URL, file allready there."
     fi
 }
-
 
 # Fetch and unpack the Stanford core package.
 function fetch_stanford_core {
@@ -78,7 +73,6 @@ function move_classifiers_inplace {
         mv "$src" "$target" || airbag "Failed to move $src to $target" $LINENO
     done
 }
-
 
 # Fetch and unpack the language models.
 function fetch_stanford_lang_models {

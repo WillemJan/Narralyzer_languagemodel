@@ -72,7 +72,7 @@ function fetch_stanford_lang_models {
 
 for lang in $($CONFIG supported_languages | xargs)
 do
-    mdkir -p
-
+    echo $($CONFIG stanford)
+    echo "$lang"
 done
 

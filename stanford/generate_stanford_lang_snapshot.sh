@@ -88,16 +88,6 @@ function fetch_stanford_lang_models {
     find . -name \*.jar -exec unzip -q -o '{}' ';'
 }
 
-# Check if Python2.7 is installed on the os,
-# we might need that in the near future.
-is_python2_7_avail() {
-    is_avail=$(which python2.7 | wc -l)
-    if [ "$is_avail" = "0" ]; then
-        airbag "Python 2.7 is not available, helas. sudo apt-get install python2.7?" $LINENO
-    fi
-    inform_user "Python 2.7 is available."
-}
-
 # Check if we find (Python) virtualenv.
 is_virtualenv_avail() {
     is_avail=$(which virtualenv | wc -l)
@@ -114,24 +104,3 @@ function fetch_stanford_lang_models {
     done
     find . -name \*.jar -exec unzip -q -o '{}' ';'
 }
-
-# Check if Python2.7 is installed on the os,
-# we might need that in the near future.
-is_python2_7_avail() {
-    is_avail=$(which python2.7 | wc -l)
-    if [ "$is_avail" = "0" ]; then
-        airbag "Python 2.7 is not available, helas. sudo apt-get install python2.7?" $LINENO
-    fi
-    inform_user "Python 2.7 is available."
-}
-
-# Check if we find (Python) virtualenv.
-is_virtualenv_avail() {
-    is_avail=$(which virtualenv | wc -l)
-    if [ "$is_avail" = "0" ]; then
-        airbag "Virtualenv is not available, helas. sudo-apt-get install virtualenv?" $LINENO
-    fi
-    inform_user "Virtualenv is available."
-}
-
-

@@ -46,7 +46,6 @@ function fetch_stanford_lang_models {
 
 for lang in $($CONFIG supported_languages | xargs)
 do
-    (
     dest_path="$($CONFIG root)"/"$($CONFIG stanford_models)"
     src_url=$($CONFIG lang_"$lang"_stanford_ner_source)
     if [ -f "$dest_path"/"$(basename $src_url)" ]
@@ -68,5 +67,4 @@ do
     fi
     mv "$dest_path"/"$(basename $src_url)" "$dest_path"/"$sum"
     ln -s "$dest_path"/"$sum" "$dest_path"/"$(basename $src_url)"
-    ) &
 done

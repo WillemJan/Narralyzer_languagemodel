@@ -65,4 +65,4 @@ function get_if_not_there () {
 
 
 get_if_not_there $($CONFIG stanford_core_source)
-unzip $(basename ($CONFIG stanford_core_source))
+unzip $(basename $($CONFIG stanford_core_source))

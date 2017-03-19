@@ -32,6 +32,38 @@ else
     airbag "Could not find ../../narralyzer/config.py, aborting."
 fi
 
+# Fetch the given URL, and save to disk
+# use the 'basename' for storing,
+# retry a couple of times before failing.
+function get_if_not_there () {
+    URL=$1
+    retries=4
+    not_done="true"
+    if [ ! -f $(basename $URL) ]; then
+        while [ $not_done == "true" ]; do
+           inform_user "Fetching $URL..."
+           wget_output=$(wget -q "$URL")
+           if [ $? -ne 0 ]; then
+               # If downloading fails, try again.
+               retries=$(($retries - 1))
+               if [ $retries == 0 ]; then
+                   $(wget -q "$URL")
+                   airbag "Error while fetching $URL, no retries left." $LINENO
+               else
+                   inform_user "Error while fetching $URL, $retries left." $LINENO
+                   sleep 1
+               fi
+           else
+               # Else leave the loop.
+               not_done="false"
+           fi
+        done
+    else
+        inform_user "Not fetching $URL, file allready there."
+    fi
+}
+
+
 # Fetch and unpack the language models.
 function fetch_stanford_lang_models {
     for lang in $($CONFIG supported_languages | xargs);do

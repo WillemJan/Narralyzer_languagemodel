@@ -63,6 +63,6 @@ function get_if_not_there () {
     fi
 }
 
-
 get_if_not_there $($CONFIG stanford_core_source)
-unzip $(basename $($CONFIG stanford_core_source))
+find $(basename $($CONFIG stanford_core_source) | cut -d '.' -f 1) -name stanford-corenlp*\.jar -exec cp '{}' ./java/ ';'
+find $(basename $($CONFIG stanford_core_source) | cut -d '.' -f 1) -name slf4j* -exec cp '{}' ./java/ ';'

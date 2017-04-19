@@ -21,7 +21,7 @@ function inform_user() {
 
 function airbag() {
     echo "Exit with -1, from $0:$@"
-    exit -1
+    #exit -1
 }
 
 
@@ -83,13 +83,13 @@ do
     if [ -f "$dest_path"/"$(basename $src_url)" ]
     then
         msg="Allready stored ""$dest_path"/"$(basename $src_url)"
-        airbag $msg
+        #airbag $msg
     fi
     msg="Storing $src_url into $dest_path"
     inform_user "$msg"
 
     msg="Failed to get""$dest_path"/"$(basename $src_url)"
-    curl -s $src_url > "$dest_path"/"$(basename $src_url)" || airbag "$msg"
+    #curl -s $src_url > "$dest_path"/"$(basename $src_url)" || airbag "$msg"
 
     sum=$(md5sum -b "$dest_path"/"$(basename $src_url)" | cut -d ' ' -f 1)
     if [ -f "$dest_path"/"$sum" ]
@@ -97,6 +97,19 @@ do
         msg="md5sum hash space to small to handle all language modules. (Bable-fish alert!)"
         airbag "$msg"
     fi
-    mv "$dest_path"/"$(basename $src_url)" "$dest_path"/"$sum"
-    ln -s "$dest_path"/"$sum" "$dest_path"/"$(basename $src_url)"
+
+    if [ "$lang" != "nl" ]; then
+        cd "$dest_path"
+        # unzip -o "$dest_path"/"$(basename $src_url)"
+        echo "-"
+        echo $($CONFIG lang_"$lang"_stanford_ner)
+        unzip -p "$dest_path"/"$(basename $src_url)" edu/stanford/nlp/models/ner/$($CONFIG lang_"$lang"_stanford_ner) > $($CONFIG lang_"$lang"_stanford_ner)
+        echo "--"
+
+        #stanford/nlp/models/ner/english.all.3class.distsim.crf.ser.gz
+        cd -
+    else
+        mv "$dest_path"/"$(basename $src_url)" "$dest_path"/"$sum"
+        ln -s "$dest_path"/"$sum" "$dest_path"/"$(basename $src_url)"
+    fi
 done
